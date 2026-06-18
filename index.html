@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📘 Глоссарий IT-терминов</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f2f5;
+            color: #333;
+            line-height: 1.6;
+            padding-bottom: 40px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: white;
+            padding: 30px 20px;
+            border-radius: 0 0 20px 20px;
+            margin-bottom: 30px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        header h1 {
+            font-size: 2.2em;
+            margin-bottom: 5px;
+        }
+
+        header p {
+            opacity: 0.8;
+            font-size: 0.95em;
+        }
+
+        /* Поисковая строка */
+        .search-wrapper {
+            position: sticky;
+            top: 15px;
+            z-index: 100;
+            margin-bottom: 25px;
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: white;
+            border-radius: 50px;
+            padding: 5px 5px 5px 20px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            transition: box-shadow 0.3s;
+        }
+
+        .search-box:focus-within {
+            box-shadow: 0 8px 30px rgba(30, 100, 200, 0.2);
+        }
+
+        .search-box input {
+            flex: 1;
+            border: none;
+            outline: none;
+            font-size: 1.05em;
+            padding: 12px 0;
+            background: transparent;
+            color: #333;
+        }
+
+        .search-box input::placeholder {
+            color: #aaa;
+        }
+
+        .search-box button {
+            background: #1a1a2e;
+            border: none;
+            color: white;
+            padding: 12px 25px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 0.95em;
+            font-weight: 600;
+            transition: background 0.3s;
+            white-space: nowrap;
+        }
+
+        .search-box button:hover {
+            background: #0f3460;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            color: #888;
+            font-size: 1.1em;
+            display: none;
+        }
+
+        /* Сетка карточек */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+            transition: all 0.4s ease;
+            border-left: 5px solid transparent;
+            scroll-margin-top: 100px;
+        }
+
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+        }
+
+        .card.highlight {
+            border-left-color: #e94560;
+            background: #fff9f9;
+            animation: pulse 1.5s ease-out;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(233, 69, 96, 0.5); }
+            70% { box-shadow: 0 0 0 20px rgba(233, 69, 96, 0); }
+            100% { box-shadow: 0 4px 15px rgba(0,0,0,0.06); }
+        }
+
+        .card h2 {
+            font-size: 1.3em;
+            margin-bottom: 12px;
+            color: #1a1a2e;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card h2 .icon {
+            font-size: 1.4em;
+        }
+
+        .card p, .card ul, .card ol {
+            color: #555;
+            font-size: 0.98em;
+            padding-left: 0;
+        }
+
+        .card ul, .card ol {
+            padding-left: 20px;
+            margin: 8px 0 0 0;
+        }
+
+        .card li {
+            margin-bottom: 6px;
+        }
+
+        .card strong {
+            color: #1a1a2e;
+        }
+
+        .search-count {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #888;
+            font-size: 0.9em;
+        }
+
+        .search-count span {
+            font-weight: bold;
+            color: #1a1a2e;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #aaa;
+            font-size: 0.85em;
+        }
+
+        @media (max-width: 600px) {
+            header h1 {
+                font-size: 1.6em;
+            }
+            .card {
+                padding: 18px;
+            }
+            .search-box button {
+                padding: 12px 18px;
+                font-size: 0.85em;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>📘 Глоссарий IT-терминов</h1>
+        <p>Краткий справочник по ключевым понятиям информационных технологий и ИБ</p>
+    </header>
+
+    <div class="container">
+        <!-- Поиск -->
+        <div class="search-wrapper">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="🔍  Введите термин (например: SQL, виртуализация, VPN)...">
+                <button onclick="searchCards()">Найти</button>
+            </div>
+        </div>
+
+        <div class="search-count" id="searchCount"></div>
+        <div class="no-results" id="noResults">😔 Ничего не найдено. Попробуйте изменить запрос.</div>
+
+        <!-- Карточки -->
+        <div class="cards-grid" id="cardsGrid"></div>
+
+        <footer>Глоссарий IT-терминов &copy; 2026</footer>
+    </div>
+
+    <script>
+        // Данные глоссария
+        const glossaryData = [
+            { term: "Виртуализация", icon: "💻", content: 'Технология, позволяющая на одном физическом сервере создавать несколько изолированных виртуальных машин (ВМ) со своими ОС и ресурсами. <strong>Гипервизор</strong> распределяет ресурсы (ЦПУ, память) между ВМ.' },
+            { term: "DNS-сервер", icon: "🌐", content: 'Система доменных имён. Преобразует понятные человеку адреса (<code>google.com</code>) в IP-адреса (<code>142.250.185.46</code>), которые используют компьютеры для связи.' },
+            { term: "Брандмауэр (Firewall)", icon: "🧱", content: 'Сетевой фильтр, который контролирует входящий и исходящий трафик по заданным правилам. Блокирует нежелательные соединения, защищая сеть или устройство.' },
+            { term: "DHCP", icon: "📡", content: 'Протокол динамической настройки узла. Автоматически назначает устройствам в сети IP-адреса, маску подсети и другие параметры, избавляя от ручной настройки.' },
+            { term: "Rate (Rate Limiting)", icon: "⏱️", content: 'Ограничение скорости или количества запросов от пользователя/сервиса за единицу времени. Используется для защиты от перегрузок и DDoS-атак.' },
+            { term: "Индекс БД", icon: "📑", content: 'Структура данных (как алфавитный указатель в книге), ускоряющая поиск записей в таблице. <strong>Минус:</strong> замедляет операции вставки и обновления, так как индекс нужно пересчитывать.' },
+            { term: "DDoS-атака", icon: "💣", content: 'Распределенная атака типа «отказ в обслуживании». Злоумышленники с множества устройств (ботнет) создают лавину запросов, вызывая перегрузку сервера и его недоступность для пользователей.' },
+            { term: "Отечественные ОС", icon: "🇷🇺", content: 'Примеры сертифицированных российских операционных систем: <strong>Astra Linux</strong>, <strong>Альт Сервер</strong>, <strong>РЕД ОС</strong>, <strong>РОСА Хром</strong>, <strong>Calculate Linux</strong>.' },
+            { term: "Сертификат ЭП", icon: "🔏", content: 'Электронный документ, подтверждающий личность владельца и неизменность подписанных данных. Содержит открытый ключ и реквизиты владельца, заверен Удостоверяющим центром.' },
+            { term: "Мониторинг", icon: "📊", content: 'Непрерывный сбор, анализ и оповещение о состоянии систем. Включает: <ul><li>Доступность (аптайм)</li><li>Производительность (ЦПУ, RAM)</li><li>Сетевые задержки</li><li>Логи и ошибки приложений</li></ul>' },
+            { term: "Рефакторинг", icon: "🔧", content: 'Процесс улучшения внутренней структуры кода без изменения его внешнего поведения. Цель — повысить читаемость, расширяемость и упростить поддержку.' },
+            { term: "SSL и TLS", icon: "🔒", content: 'Оба — криптографические протоколы для защиты передачи данных. <ul><li><strong>SSL</strong> — устаревший предшественник, содержит известные уязвимости.</li><li><strong>TLS</strong> — современный стандарт, более безопасные алгоритмы.</li></ul> Сейчас все используют TLS, называя это SSL по привычке.' },
+            { term: "HTTP и HTTPS", icon: "🌍", content: '<ul><li><strong>HTTP</strong> — протокол передачи гипертекста открытым текстом.</li><li><strong>HTTPS</strong> — тот же HTTP, но поверх <strong>TLS/SSL</strong>. Обеспечивает шифрование трафика, защищая данные от перехвата и подмены.</li></ul>' },
+            { term: "Реляционные и нереляционные БД", icon: "🗄️", content: '<ul><li><strong>Реляционные (SQL):</strong> Данные в виде связанных таблиц. Строгая структура, ACID-транзакции (PostgreSQL, MySQL).</li><li><strong>Нереляционные (NoSQL):</strong> Ключ-значение, документы, графы. Гибкая схема, горизонтальное масштабирование (MongoDB, Redis, Cassandra).</li></ul>' },
+            { term: "API, REST и SOAP", icon: "🔌", content: '<ul><li><strong>API:</strong> интерфейс для взаимодействия программ.</li><li><strong>SOAP:</strong> строгий протокол, только XML, часто с WSDL.</li><li><strong>REST:</strong> архитектурный стиль, JSON/XML через HTTP. Более простой и легковесный.</li></ul>' },
+            { term: "Agile, Scrum, Kanban, CI/CD", icon: "🔄", content: '<ul><li><strong>Agile:</strong> философия гибкой разработки.</li><li><strong>Scrum:</strong> фреймворк с итерациями (спринтами).</li><li><strong>Kanban:</strong> непрерывная поставка, ограничение WIP.</li><li><strong>CI/CD:</strong> непрерывная интеграция и доставка/развертывание.</li></ul>' },
+            { term: "Монолит vs Микросервисы", icon: "🧩", content: '<ul><li><strong>Монолит:</strong> единое приложение, всё связано. Проще в начале, сложно масштабировать.</li><li><strong>Микросервисы:</strong> независимые сервисы. Свобода технологий, точечное масштабирование, но сложнее управление.</li></ul>' },
+            { term: "Пентест", icon: "🕵️", content: 'Тестирование на проникновение. Легальная имитация атаки на инфраструктуру для поиска уязвимостей и оценки реального уровня защищенности.' },
+            { term: "TCP и UDP", icon: "📦", content: '<ul><li><strong>TCP:</strong> медленнее, с гарантией доставки и порядком пакетов (веб, почта).</li><li><strong>UDP:</strong> быстрый, без гарантии доставки (стримы, VoIP, игры).</li></ul>' },
+            { term: "Контейнеризация", icon: "📦", content: 'Запуск приложения в изолированной среде (контейнере) с зависимостями. Использует ядро хостовой ОС — легче и быстрее виртуализации (Docker).' },
+            { term: "Удаленное рабочее место (VDI)", icon: "🖥️", content: 'Инфраструктура виртуальных рабочих столов. Среда сотрудника запускается на сервере в ЦОДе, пользователь видит картинку на своем устройстве.' },
+            { term: "Балансировка инфраструктуры", icon: "⚖️", content: 'Распределение входящего трафика между серверами (нодами). Повышает отказоустойчивость: при падении одного сервера трафик уходит на живые.' },
+            { term: "Web Application Firewall (WAF)", icon: "🛡️", content: 'Межсетевой экран уровня веб-приложений. Фильтрует HTTP/HTTPS-трафик, блокируя SQL-инъекции, XSS, подбор паролей и др.' },
+            { term: "Ноды", icon: "🖧", content: 'Узел (Node) — любое устройство или процесс, являющееся частью сети/кластера. Например, сервер в Kubernetes или компьютер в локальной сети.' },
+            { term: "Шардирование БД", icon: "✂️", content: 'Метод горизонтального масштабирования: разрезание большой таблицы на независимые части (шарды) и хранение их на разных серверах по ключу (например, ID пользователя).' },
+            { term: "Двухфакторная аутентификация (2FA)", icon: "🔐", content: 'Защита входа: «что-то, что ты знаешь» (пароль) + «что-то, что у тебя есть» (код из SMS) или «что-то, чем ты являешься» (биометрия).' },
+            { term: "Аутентификация vs Авторизация", icon: "🆔", content: '<ul><li><strong>Аутентификация:</strong> проверка личности («Кто ты?»).</li><li><strong>Авторизация:</strong> проверка прав («Что тебе можно?»).</li></ul>' },
+            { term: "SIEM", icon: "📋", content: 'Система сбора и корреляции событий безопасности. Собирает логи со всех устройств, ищет аномалии и инциденты, генерирует алерты.' },
+            { term: "NAT", icon: "🔀", content: 'Трансляция сетевых адресов. Позволяет множеству устройств в частной сети выходить в интернет через один публичный IP-адрес.' },
+            { term: "7-уровневая модель OSI", icon: "🏗️", content: '<ol><li><strong>Физический</strong> (биты/сигнал)</li><li><strong>Канальный</strong> (кадры, MAC)</li><li><strong>Сетевой</strong> (пакеты, IP)</li><li><strong>Транспортный</strong> (TCP/UDP, порты)</li><li><strong>Сеансовый</strong> (управление сессией)</li><li><strong>Представления</strong> (форматы, шифрование)</li><li><strong>Прикладной</strong> (HTTP, SMTP, DNS)</li></ol>' },
+            { term: "Порядок действий при утечке информации", icon: "🚨", content: '<ol><li><strong>Локализация:</strong> отключить системы от сети.</li><li><strong>Фиксация:</strong> сохранить улики (логи, дампы).</li><li><strong>Расследование:</strong> выявить причину и объем.</li><li><strong>Уведомление:</strong> оповестить руководство и регуляторов (РКН).</li><li><strong>Устранение:</strong> закрыть уязвимости, восстановить данные.</li></ol>' },
+            { term: "СМЭВ", icon: "🏛️", content: 'Система межведомственного электронного взаимодействия. Единая шина данных в РФ для обмена между госорганами, банками и порталом «Госуслуги».' },
+            { term: "Маршрутизация и коммутаторы", icon: "🔀", content: '<ul><li><strong>Коммутатор:</strong> 2-й уровень OSI, передает по MAC-адресам <em>внутри</em> сети.</li><li><strong>Маршрутизатор:</strong> 3-й уровень OSI, передает по IP-адресам <em>между</em> сетями.</li></ul>' },
+            { term: "VPN", icon: "🔐", content: 'Виртуальная частная сеть. Создает зашифрованный туннель, скрывает IP-адрес и обеспечивает конфиденциальность в недоверенных сетях.' },
+            { term: "Ключевые НПА в IT (РФ)", icon: "📜", content: '<ul><li><strong>149-ФЗ:</strong> «Об информации...»</li><li><strong>152-ФЗ:</strong> «О персональных данных»</li><li><strong>63-ФЗ:</strong> «Об электронной подписи»</li><li><strong>187-ФЗ:</strong> Безопасность КИИ</li><li><strong>Указы Президента:</strong> Импортозамещение ПО</li></ul>' },
+            { term: "Документирование в проекте/коде", icon: "📝", content: 'Обеспечивается: <ul><li>Комментарии в коде (Javadoc, Docstrings)</li><li>README-файлы</li><li>Автогенерация API (Swagger/OpenAPI)</li><li>Внутренняя Wiki (Confluence) и ADR</li></ul>' },
+            { term: "Резервное копирование (Бэкап)", icon: "💾", content: 'Создание копии данных для восстановления при потере. Выполняется по расписанию, хранится отдельно (правило 3-2-1).' },
+            { term: "SQL-инъекция", icon: "💉", content: 'Атака: внедрение вредоносного SQL-кода в поля ввода. Позволяет обойти авторизацию, украсть или изменить данные в базе.' },
+            { term: "Балансировка нагрузки", icon: "⚖️", content: 'Распределение трафика между нодами для оптимизации скорости и предотвращения перегрузки отдельного сервера.' },
+            { term: "RTO и RPO", icon: "⏳", content: '<ul><li><strong>RPO:</strong> допустимый объем потерянных данных («сколько данных готовы потерять?»).</li><li><strong>RTO:</strong> допустимое время простоя («сколько времени на восстановление?»).</li></ul>' }
+        ];
+
+        const cardsGrid = document.getElementById('cardsGrid');
+        const searchInput = document.getElementById('searchInput');
+        const noResults = document.getElementById('noResults');
+        const searchCount = document.getElementById('searchCount');
+
+        // Рендер всех карточек
+        function renderCards(data) {
+            cardsGrid.innerHTML = '';
+            if (data.length === 0) {
+                noResults.style.display = 'block';
+                searchCount.innerHTML = '';
+            } else {
+                noResults.style.display = 'none';
+                searchCount.innerHTML = `Найдено: <span>${data.length}</span> из ${glossaryData.length}`;
+            }
+
+            data.forEach((item, index) => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.id = `card-${index}`;
+                card.innerHTML = `
+                    <h2><span class="icon">${item.icon}</span> ${item.term}</h2>
+                    <div>${item.content}</div>
+                `;
+                cardsGrid.appendChild(card);
+            });
+        }
+
+        // Поиск с подсветкой и скроллом
+        function searchCards() {
+            const query = searchInput.value.trim().toLowerCase();
+
+            if (query === '') {
+                renderCards(glossaryData);
+                // Убираем подсветку
+                document.querySelectorAll('.card').forEach(c => c.classList.remove('highlight'));
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                return;
+            }
+
+            // Фильтруем
+            const filtered = glossaryData.filter(item =>
+                item.term.toLowerCase().includes(query) ||
+                item.content.toLowerCase().replace(/<[^>]*>/g, '').includes(query)
+            );
+
+            renderCards(filtered);
+
+            // Подсвечиваем первую найденную карточку и скроллим к ней
+            setTimeout(() => {
+                document.querySelectorAll('.card').forEach(c => c.classList.remove('highlight'));
+                const firstCard = document.querySelector('.card');
+                if (firstCard) {
+                    firstCard.classList.add('highlight');
+                    firstCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }, 100);
+        }
+
+        // Поиск по Enter
+        searchInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchCards();
+            }
+        });
+
+        // Живой поиск при вводе (с небольшой задержкой)
+        let debounceTimer;
+        searchInput.addEventListener('input', function() {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => {
+                searchCards();
+            }, 400);
+        });
+
+        // Изначальный рендер
+        renderCards(glossaryData);
+    </script>
+
+</body>
+</html>
